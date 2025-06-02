@@ -1,0 +1,41 @@
+/*
+ * This is a template build.gradle file for Exercise 2
+ * Students should analyze and modify this file as part of the exercise
+ */
+
+// Секция plugins определяет, какие плагины используются в проекте
+plugins {
+    // Добавляет поддержку для запуска приложения
+    id 'application'
+    
+    // Добавляет поддержку Java
+    id 'java'
+}
+
+// Секция repositories указывает, откуда Gradle будет загружать зависимости
+repositories {
+    // Использовать Maven Central Repository
+    mavenCentral()
+}
+
+// Секция dependencies определяет зависимости проекта
+dependencies {
+    // Библиотека Google Guava для дополнительных утилит
+    implementation 'com.google.guava:guava:31.1-jre'
+    
+    // Библиотека JUnit для тестирования
+    testImplementation 'junit:junit:4.13.2'
+}
+
+// Секция application содержит настройки для плагина application
+application {
+    // Определяет главный класс приложения
+    mainClass = 'com.example.App'
+}
+
+// Дополнительные настройки можно добавить здесь
+// Например:
+// java {
+//     sourceCompatibility = JavaVersion.VERSION_11
+//     targetCompatibility = JavaVersion.VERSION_11
+// }
