@@ -1,144 +1,206 @@
-# Задание 1: Создание многомодульного проекта
+# Задание 1: Создание простого Java-проекта с Gradle
 
 ## Цель
-Научиться создавать и настраивать многомодульные проекты в Gradle.
+Научиться создавать и настраивать простые Java-проекты с использованием Gradle.
 
 ## Задание
 
-Создайте Gradle-проект с двумя модулями:
-- `core` — содержит базовую функциональность
-- `app` — использует функциональность из модуля `core`
+Создайте простой Java-проект с Gradle, который будет содержать класс для работы со строками и демонстрационное приложение.
 
 ### Шаги выполнения
 
-1. Создайте корневую директорию проекта:
+1. Создайте директорию проекта:
    ```bash
-   mkdir gradle-multimodule
-   cd gradle-multimodule
+   mkdir gradle-string-utils
+   cd gradle-string-utils
    ```
 
 2. Инициализируйте Gradle-проект:
    ```bash
-   gradle init --type basic
+   gradle init --type java-application
    ```
 
-3. Создайте директории для модулей:
-   ```bash
-   mkdir -p core/src/main/java/com/example/core
-   mkdir -p core/src/test/java/com/example/core
-   mkdir -p app/src/main/java/com/example/app
-   mkdir -p app/src/test/java/com/example/app
+3. Выберите следующие опции при инициализации:
+   - Язык реализации: Java
+   - Система сборки DSL: Groovy
+   - Тестовый фреймворк: JUnit Jupiter
+   - Имя проекта: gradle-string-utils
+   - Имя пакета исходного кода: com.example.stringutils
+
+4. Изучите созданную структуру проекта:
+   ```
+   gradle-string-utils/
+   ├── app/
+   │   ├── build.gradle
+   │   └── src/
+   │       ├── main/
+   │       │   └── java/
+   │       │       └── com/
+   │       │           └── example/
+   │       │               └── stringutils/
+   │       │                   └── App.java
+   │       └── test/
+   │           └── java/
+   │               └── com/
+   │                   └── example/
+   │                       └── stringutils/
+   │                           └── AppTest.java
+   ├── gradle/
+   │   └── wrapper/
+   │       ├── gradle-wrapper.jar
+   │       └── gradle-wrapper.properties
+   ├── gradlew
+   ├── gradlew.bat
+   └── settings.gradle
    ```
 
-4. Создайте файл `settings.gradle` в корневой директории:
-   ```groovy
-   rootProject.name = 'gradle-multimodule'
-   include 'core', 'app'
-   ```
-
-5. Создайте файл `build.gradle` в корневой директории:
-   ```groovy
-   plugins {
-       id 'java'
-   }
-
-   allprojects {
-       repositories {
-           mavenCentral()
-       }
-   }
-
-   subprojects {
-       apply plugin: 'java'
-       
-       sourceCompatibility = '11'
-       targetCompatibility = '11'
-       
-       dependencies {
-           testImplementation 'junit:junit:4.13.2'
-       }
-   }
-   ```
-
-6. Создайте файл `core/build.gradle`:
-   ```groovy
-   dependencies {
-       implementation 'org.apache.commons:commons-lang3:3.12.0'
-   }
-   ```
-
-7. Создайте файл `app/build.gradle`:
-   ```groovy
-   plugins {
-       id 'application'
-   }
-
-   dependencies {
-       implementation project(':core')
-   }
-
-   application {
-       mainClass = 'com.example.app.App'
-   }
-   ```
-
-8. Создайте класс `StringUtils` в модуле `core`:
+5. Создайте класс `StringUtils`:
    ```java
-   // core/src/main/java/com/example/core/StringUtils.java
-   package com.example.core;
+   // app/src/main/java/com/example/stringutils/StringUtils.java
+   package com.example.stringutils;
 
    public class StringUtils {
+       /**
+        * Переворачивает строку.
+        * @param input Входная строка
+        * @return Перевернутая строка или null, если input равен null
+        */
        public static String reverse(String input) {
            if (input == null) {
                return null;
            }
            return new StringBuilder(input).reverse().toString();
        }
-   }
-   ```
-
-9. Создайте класс `App` в модуле `app`:
-   ```java
-   // app/src/main/java/com/example/app/App.java
-   package com.example.app;
-
-   import com.example.core.StringUtils;
-
-   public class App {
-       public static void main(String[] args) {
-           String original = "Hello, Gradle!";
-           String reversed = StringUtils.reverse(original);
-           
-           System.out.println("Original: " + original);
-           System.out.println("Reversed: " + reversed);
+       
+       /**
+        * Проверяет, является ли строка палиндромом.
+        * @param input Входная строка
+        * @return true, если строка читается одинаково в обоих направлениях
+        */
+       public static boolean isPalindrome(String input) {
+           if (input == null) {
+               return false;
+           }
+           String cleaned = input.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+           return cleaned.equals(new StringBuilder(cleaned).reverse().toString());
+       }
+       
+       /**
+        * Подсчитывает количество слов в строке.
+        * @param input Входная строка
+        * @return Количество слов
+        */
+       public static int countWords(String input) {
+           if (input == null || input.trim().isEmpty()) {
+               return 0;
+           }
+           return input.trim().split("\\s+").length;
        }
    }
    ```
 
-10. Соберите и запустите проект:
-    ```bash
-    ./gradlew build
-    ./gradlew run
-    ```
+6. Модифицируйте класс `App`:
+   ```java
+   // app/src/main/java/com/example/stringutils/App.java
+   package com.example.stringutils;
+
+   public class App {
+       public static void main(String[] args) {
+           String text = "Gradle is awesome!";
+           
+           System.out.println("Original text: " + text);
+           System.out.println("Reversed: " + StringUtils.reverse(text));
+           System.out.println("Word count: " + StringUtils.countWords(text));
+           
+           String palindrome = "A man, a plan, a canal: Panama";
+           System.out.println("\"" + palindrome + "\" is a palindrome: " + 
+                             StringUtils.isPalindrome(palindrome));
+       }
+   }
+   ```
+
+7. Добавьте тесты для класса `StringUtils`:
+   ```java
+   // app/src/test/java/com/example/stringutils/StringUtilsTest.java
+   package com.example.stringutils;
+
+   import org.junit.jupiter.api.Test;
+   import static org.junit.jupiter.api.Assertions.*;
+
+   class StringUtilsTest {
+       @Test
+       void testReverse() {
+           assertEquals("olleH", StringUtils.reverse("Hello"));
+           assertNull(StringUtils.reverse(null));
+           assertEquals("", StringUtils.reverse(""));
+       }
+       
+       @Test
+       void testIsPalindrome() {
+           assertTrue(StringUtils.isPalindrome("A man, a plan, a canal: Panama"));
+           assertTrue(StringUtils.isPalindrome("racecar"));
+           assertFalse(StringUtils.isPalindrome("hello"));
+           assertFalse(StringUtils.isPalindrome(null));
+       }
+       
+       @Test
+       void testCountWords() {
+           assertEquals(3, StringUtils.countWords("Hello beautiful world"));
+           assertEquals(0, StringUtils.countWords(""));
+           assertEquals(0, StringUtils.countWords(null));
+           assertEquals(1, StringUtils.countWords("SingleWord"));
+       }
+   }
+   ```
+
+8. Модифицируйте файл `build.gradle` для добавления зависимостей:
+   ```groovy
+   plugins {
+       id 'application'
+   }
+
+   repositories {
+       mavenCentral()
+   }
+
+   dependencies {
+       implementation 'org.apache.commons:commons-lang3:3.12.0'
+       
+       testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+   }
+
+   application {
+       mainClass = 'com.example.stringutils.App'
+   }
+
+   tasks.named('test') {
+       useJUnitPlatform()
+   }
+   ```
+
+9. Соберите и запустите проект:
+   ```bash
+   ./gradlew build
+   ./gradlew run
+   ```
 
 ## Требования к выполнению
 
 1. Проект должен успешно собираться и запускаться
-2. Модуль `app` должен зависеть от модуля `core`
-3. Модуль `core` должен содержать как минимум один утилитный класс
-4. Модуль `app` должен использовать функциональность из модуля `core`
-5. Добавьте тесты для обоих модулей
+2. Класс `StringUtils` должен содержать как минимум три метода для работы со строками
+3. Все методы должны быть покрыты тестами
+4. Проект должен использовать хотя бы одну внешнюю зависимость
 
 ## Дополнительные задания
 
-1. Добавьте третий модуль `api`, который будет зависеть от `core` и предоставлять REST API
-2. Настройте общие зависимости для всех модулей в корневом `build.gradle`
-3. Добавьте плагин для генерации документации (Javadoc) и настройте его для всех модулей
+1. Добавьте метод для подсчета частоты символов в строке
+2. Создайте задачу Gradle для генерации отчета о покрытии кода тестами
+3. Настройте проект для создания исполняемого JAR-файла с зависимостями
 
 ## Критерии оценки
 
 - Правильность структуры проекта
-- Корректность настройки зависимостей между модулями
+- Корректность работы методов
 - Качество кода и тестов
 - Выполнение дополнительных заданий
 
